@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\UserPreferenceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/search', [ArticleController::class, 'search']);
 Route::get('/articles/{id}', [ArticleController::class, 'show']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/preferences', [UserPreferenceController::class, 'setPreferences']);
+    Route::get('/preferences', [UserPreferenceController::class, 'getPreferences']);
+    Route::get('/feed', [UserPreferenceController::class, 'getPersonalizedFeed']);
+});
