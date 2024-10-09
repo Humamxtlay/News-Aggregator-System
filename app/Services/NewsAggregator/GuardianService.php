@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class GuardianService implements NewsSourceInterface
 {
-    protected $client;
+    public $client;
     protected $apiKey;
 
     public function __construct()
