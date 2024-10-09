@@ -26,7 +26,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::get('/articles', [ArticleController::class, 'index']);
-Route::get('/articles/search', [ArticleController::class, 'search']);
+Route::middleware('throttle:search')->group(function () {
+    Route::get('/articles/search', [ArticleController::class, 'search']);
+});
 Route::get('/articles/{id}', [ArticleController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
