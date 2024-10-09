@@ -9,6 +9,8 @@ class NewsAggregatorService
     public function __construct()
     {
         $this->sources['newsapi'] = new NewsAPIService();
+        $this->sources['guardianapi'] = new GuardianService();
+        $this->sources['nyt'] = new NewYorkTimesService();
     }
 
     public function fetchFromSource($source)
