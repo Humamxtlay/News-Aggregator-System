@@ -9,6 +9,15 @@ class Article extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'title',
+        'body',
+        'author',
+        'source',
+        'category',
+        'published_at',
+    ];
+
     protected $hidden = [
         'created_at',
         'updated_at'
