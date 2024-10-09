@@ -9,6 +9,33 @@ use App\Models\Article;
 
 class UserPreferenceController extends Controller
 {
+
+    /**
+     * @OA\Post(
+     *      path="/api/preferences",
+     *      operationId="setPreferences",
+     *      tags={"User Preferences"},
+     *      summary="Set user preferences",
+     *      description="Set the user's preferred sources, categories, and authors",
+     *      security={{ "sanctum": {} }},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(property="preferred_sources", type="string", example="BBC,The Guardian"),
+     *              @OA\Property(property="preferred_categories", type="string", example="Technology, Sports"),
+     *              @OA\Property(property="preferred_authors", type="string", example="John Doe, Jane Doe")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Preferences updated successfully"
+     *      ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Validation error"
+     *      )
+     * )
+     */
     public function setPreferences(Request $request)
     {
         $request->validate([
@@ -29,6 +56,24 @@ class UserPreferenceController extends Controller
         return response()->json(['message' => 'Preferences updated successfully!']);
     }
 
+    /**
+     * @OA\Get(
+     *      path="/api/preferences",
+     *      operationId="getPreferences",
+     *      tags={"User Preferences"},
+     *      summary="Get user preferences",
+     *      description="Get the user's preferences",
+     *      security={{ "sanctum": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Preferences not found"
+     *      )
+     * )
+     */
     public function getPreferences()
     {
         $user = Auth::user();
@@ -41,6 +86,24 @@ class UserPreferenceController extends Controller
         return response()->json($preference);
     }
 
+    /**
+     * @OA\Get(
+     *      path="/api/feed",
+     *      operationId="getPersonalizedFeed",
+     *      tags={"User Preferences"},
+     *      summary="Get personalized feed",
+     *      description="Get a personalized feed of articles based on the user's preferences",
+     *      security={{ "sanctum": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Preferences not set"
+     *      )
+     * )
+     */
     public function getPersonalizedFeed()
     {
         $user = Auth::user();

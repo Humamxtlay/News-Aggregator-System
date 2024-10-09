@@ -7,13 +7,65 @@ use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
-    // Get all articles with pagination
+    /**
+     * @OA\Get(
+     *      path="/api/articles",
+     *      operationId="getArticles",
+     *      tags={"Articles"},
+     *      summary="Get list of articles",
+     *      description="Returns a list of articles with pagination",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation"
+     *      )
+     * )
+     */
     public function index()
     {
         $articles = Article::paginate(10);
         return response()->json($articles);
     }
 
+    /**
+     * @OA\Get(
+     *      path="/api/articles/search",
+     *      operationId="searchArticles",
+     *      tags={"Articles"},
+     *      summary="Search articles",
+     *      description="Search articles by keyword, category, source, or date",
+     *      @OA\Parameter(
+     *          name="keyword",
+     *          in="query",
+     *          description="Search by keyword",
+     *          required=false,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="category",
+     *          in="query",
+     *          description="Filter by category",
+     *          required=false,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="source",
+     *          in="query",
+     *          description="Filter by source",
+     *          required=false,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation"
+     *      )
+     * )
+     */
     public function search(Request $request)
     {
         $query = Article::query();
@@ -40,6 +92,32 @@ class ArticleController extends Controller
         return response()->json($articles);
     }
 
+    /**
+     * @OA\Get(
+     *      path="/api/articles/{id}",
+     *      operationId="getArticleById",
+     *      tags={"Articles"},
+     *      summary="Get article by ID",
+     *      description="Returns a single article by ID",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Article ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Article not found"
+     *      )
+     * )
+     */
     public function show($id)
     {
         $article = Article::find($id);
