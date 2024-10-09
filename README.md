@@ -1,64 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# News Aggregator API
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a Laravel-based News Aggregator API that aggregates news articles from various sources, provides user authentication, and allows users to set preferences for personalized news feeds. The application is set up using Docker for a consistent and reproducible development environment.
 
-## About Laravel
+## Table of Contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Setup Instructions](#setup-instructions)
+- [Running the Docker Environment](#running-the-docker-environment)
+- [API Documentation](#api-documentation)
+- [Features](#features)
+- [Additional Notes](#additional-notes)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Setup Instructions
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Prerequisites
 
-## Learning Laravel
+Before setting up the project, ensure you have the following installed on your machine:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- [Docker](https://www.docker.com/products/docker-desktop) (Docker Desktop)
+- [Docker Compose](https://docs.docker.com/compose/install/) (included with Docker Desktop)
+- [Composer](https://getcomposer.org/)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Step-by-Step Setup
 
-## Laravel Sponsors
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/news-aggregator-api.git
+   cd news-aggregator-api
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+2. **Install Laravel dependencies**: Run the following command to install all the necessary dependencies using Composer:
+    ```bash
+    composer install
+    ```
 
-### Premium Partners
+3. **Create the .env file**: Copy the .env.example file to create a new .env file:
+    ```bash
+    cp .env.example .env
+    ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+4. **Generate an application key**: This key is required by Laravel to secure your application.
+    ```bash
+    php artisan key:generate
+    ```
 
-## Contributing
+5. **Set up database credentials in .env**: Make sure the .env file is updated to connect to the MySQL container:
+    ```env
+    DB_CONNECTION=mysql
+    DB_HOST=mysql
+    DB_PORT=3306
+    DB_DATABASE=laravel
+    DB_USERNAME=root
+    DB_PASSWORD=root
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+6. **Run database migrations**: Run the following Artisan command to set up the database structure:
+    ```bash
+    php artisan migrate
+    ```
 
-## Code of Conduct
+## Running the Docker Environment
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+The application uses Docker to provide a consistent development environment. The Docker setup includes services for Laravel (PHP-FPM), MySQL, and Nginx.
 
-## Security Vulnerabilities
+> **Note:** I'm not sure the Docker setup will work perfectly for everyone. If you encounter issues with Docker, you can start the application using the Laravel built-in server with the following command:
+> ```bash
+> php artisan serve
+> ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### How to Run the Docker Environment
 
-## License
+1. **Build and start the Docker containers**:
+    ```bash
+    docker-compose up --build
+    ```
+    This will build and start the containers. The application will be accessible at `http://localhost:8000`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. **Run Laravel commands inside the Docker container**: To run Artisan commands or Composer commands, enter the app container using:
+    ```bash
+    docker-compose exec app bash
+    ```
+    Then, inside the container, you can run commands like:
+    ```bash
+    php artisan migrate
+    ```
+
+3. **Stop the Docker environment**: To stop the containers, run:
+    ```bash
+    docker-compose down
+    ```
+
+4. **Run Docker in detached mode**: To run the Docker containers in the background:
+    ```bash
+    docker-compose up -d
+    ```
+
+## API Documentation
+
+The API documentation is available via Swagger. You can view the documentation by visiting the following URL:
+
+- [API Documentation](http://localhost:8000/api/documentation) (local environment)
+
+The Swagger configuration file is included in the repository. You can find it in the `storage/api-docs/api-docs.json` file.
+
+The documentation includes details about the available API endpoints for authentication, articles, user preferences, and password reset.
+
+## Features
+
+- **User Authentication**: Register, log in, and log out users via API endpoints.
+- **Password Reset**: Users can request password reset links and reset passwords using tokens.
+- **Article Management**: Fetch articles from multiple sources (like The Guardian and The New York Times).
+- **Personalized News Feed**: Users can set preferences for news sources, categories, and authors to get a personalized feed.
+- **Caching**: The API uses caching for frequently requested endpoints to improve performance.
+- **Rate Limiting**: Rate limits are applied to API endpoints to prevent abuse.
+- **Search Functionality**: Users can search articles by keyword, category, source, and date.
+
+## Additional Notes
+
+- **Caching**: The application uses Laravel’s caching system to cache API responses for articles and user feeds. Cache is cleared when new articles are fetched or when user preferences are updated.
+  
+- **Rate Limiting**: The API is rate-limited to prevent abuse. You can configure the limits in `app/Providers/RouteServiceProvider.php`.
+
+- **Password Reset**: Users can request a password reset link via the `/api/password/email` endpoint and reset their password using the token sent in the email.
+
+- **Swagger Integration**: The API is documented using Swagger, and the documentation can be regenerated using the following command:
+    ```bash
+    php artisan l5-swagger:generate
+    ```
+
+---
