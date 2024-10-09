@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services\NewsAggregator;
+use Illuminate\Support\Facades\Cache;
 
 class NewsAggregatorService
 {
@@ -27,5 +28,16 @@ class NewsAggregatorService
         foreach ($this->sources as $source) {
             $source->fetchArticles();
         }
+        $this->clearArticleCache();
+    }
+
+    protected function clearArticleCache()
+    {
+        Cache::forget('articles');
+
+        for ($page = 1; $page <= 10; $page++) {
+            Cache::forget("articles_page_{$page}");
+        }
+        Cache::forget('articles_search_*');
     }
 }

@@ -6,6 +6,7 @@ use App\Models\UserPreference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Article;
+use Illuminate\Support\Facades\Cache;
 
 class UserPreferenceController extends Controller
 {
@@ -53,7 +54,15 @@ class UserPreferenceController extends Controller
             'preferred_authors' => $request->preferred_authors,
         ]);
 
+        $this->clearUserFeedCache($user);
         return response()->json(['message' => 'Preferences updated successfully!']);
+    }
+
+    protected function clearUserFeedCache($user)
+    {
+        for ($page = 1; $page <= 10; $page++) {
+            Cache::forget("user_feed_{$user->id}_page_{$page}");
+        }
     }
 
     /**
@@ -107,28 +116,33 @@ class UserPreferenceController extends Controller
     public function getPersonalizedFeed()
     {
         $user = Auth::user();
-        $preference = $user->preference;
-
-        if (! $preference) {
-            return response()->json(['message' => 'No preferences set'], 404);
-        }
-
-        $query = Article::query();
-
-        if ($preference->preferred_sources) {
-            $query->where('source', $preference->preferred_sources);
-        }
-
-        if ($preference->preferred_categories) {
-            $query->orWhere('category', $preference->preferred_categories);
-        }
-
-        if ($preference->preferred_authors) {
-            $query->orWhere('author', $preference->preferred_authors);
-        }
-
-        $articles = $query->paginate(10);
-
-        return response()->json($articles);
+        $page = request()->get('page', 1);
+        $cacheKey = 'user_feed_' . $user->id . "_page_{$page}";
+    
+        $feed = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($user) {
+            $preference = $user->preference;
+    
+            if (! $preference) {
+                return response()->json(['message' => 'No preferences set'], 404);
+            }
+    
+            $query = Article::query();
+    
+            if ($preference->preferred_sources) {
+                $query->where('source', $preference->preferred_sources);
+            }
+    
+            if ($preference->preferred_categories) {
+                $query->orWhere('category', $preference->preferred_categories);
+            }
+    
+            if ($preference->preferred_authors) {
+                $query->orWhere('author', $preference->preferred_authors);
+            }
+    
+            return $query->paginate(10);
+        });
+    
+        return response()->json($feed);
     }
 }

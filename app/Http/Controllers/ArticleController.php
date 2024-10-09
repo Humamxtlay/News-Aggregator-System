@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ArticleController extends Controller
 {
@@ -22,7 +23,15 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::paginate(10);
+        // Include the page number in the cache key
+        $page = request()->get('page', 1);
+        $cacheKey = "articles_page_{$page}";
+
+        // Cache the paginated articles per page
+        $articles = Cache::remember($cacheKey, now()->addMinutes(10), function () {
+            return Article::paginate(10);
+        });
+
         return response()->json($articles);
     }
 
@@ -68,27 +77,32 @@ class ArticleController extends Controller
      */
     public function search(Request $request)
     {
-        $query = Article::query();
-
-        if ($request->has('keyword')) {
-            $query->where('title', 'like', '%' . $request->keyword . '%')
-                  ->orWhere('body', 'like', '%' . $request->keyword . '%');
-        }
-
-        if ($request->has('category')) {
-            $query->where('category', $request->category);
-        }
-
-        if ($request->has('source')) {
-            $query->where('source', $request->source);
-        }
-
-        if ($request->has('date')) {
-            $query->whereDate('published_at', $request->date);
-        }
-
-        $articles = $query->paginate(10);
-
+        $page = $request->get('page', 1);
+        $cacheKey = 'articles_search_' . md5(json_encode($request->all())) . "_page_{$page}";
+    
+        $articles = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request) {
+            $query = Article::query();
+    
+            if ($request->has('keyword')) {
+                $query->where('title', 'like', '%' . $request->keyword . '%')
+                      ->orWhere('body', 'like', '%' . $request->keyword . '%');
+            }
+    
+            if ($request->has('category')) {
+                $query->where('category', $request->category);
+            }
+    
+            if ($request->has('source')) {
+                $query->where('source', $request->source);
+            }
+    
+            if ($request->has('date')) {
+                $query->whereDate('published_at', $request->date);
+            }
+    
+            return $query->paginate(10);
+        });
+    
         return response()->json($articles);
     }
 
