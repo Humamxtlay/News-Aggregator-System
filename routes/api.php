@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\UserPreferenceController;
+use App\Http\Controllers\PasswordResetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,3 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/preferences', [UserPreferenceController::class, 'getPreferences']);
     Route::get('/feed', [UserPreferenceController::class, 'getPersonalizedFeed']);
 });
+
+
+Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail']);
+Route::post('/password/reset', [PasswordResetController::class, 'resetPassword']);

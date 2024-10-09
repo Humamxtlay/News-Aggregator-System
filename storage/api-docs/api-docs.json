@@ -223,6 +223,99 @@
                 ]
             }
         },
+        "/api/password/email": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Send password reset link",
+                "description": "Sends a password reset link to the specified email address",
+                "operationId": "sendResetLinkEmail",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "johndoe@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset link sent successfully"
+                    },
+                    "400": {
+                        "description": "Failed to send password reset link"
+                    }
+                }
+            }
+        },
+        "/api/password/reset": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Reset password",
+                "description": "Resets the user's password using a token sent in the reset email",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "token_from_email"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "johndoe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successfully"
+                    },
+                    "400": {
+                        "description": "Failed to reset password"
+                    }
+                }
+            }
+        },
         "/api/preferences": {
             "get": {
                 "tags": [
